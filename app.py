@@ -16,11 +16,6 @@ def save_deck_to_gsheet(deck_name, df):
     updated_df = pd.concat([existing_data, df], ignore_index=True)
     conn.update( data=updated_df)
 
-# デッキ一覧を取得する関数
-def load_deck_names():
-    df = conn.read()
-    return df["deck_name"].unique()
-
 # --- 設定と初期化 ---
 st.set_page_config(page_title="Card Deck Builder", layout="centered")
 
@@ -87,15 +82,16 @@ elif st.session_state.page == "REGISTER":
 # 3. デッキ選択画面
 elif st.session_state.page == "SELECT_DECK":
     st.title("🎮 デッキ選択")
-    deck_files = load_deck_names()  # スプレッドシートからデッキ名を取得
+    all_data_df=conn.read()
+    deck_files = all_data_df["deck_name"].unique()  # スプレッドシートからデッキ名を取得
 
     selected_file = st.selectbox("デッキ選択", deck_files)
     if st.button("バトル開始！"):
-        my_deck = conn.read(worksheet=selected_file)  # 選択したデッキのカードデータを読み込む
+        my_deck = all_data_df[all_data_df["deck_name"] == selected_file]  # 選択したデッキのカードデータを読み込む
         if len(my_deck) < 3:
             st.error("カードは3枚以上登録してください！")
         else:
-            st.session_state.full_deck = my_deck # デッキ全体をセッションに保存
+            st.session_state.full_deck = my_deck.to_dict(orient="records")  # デッキ全体をセッションに保存
             st.session_state.player_hp = 300
             st.session_state.cpu_hp = 300
             # 最初の3枚をドロー
