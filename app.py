@@ -73,7 +73,7 @@ elif st.session_state.page == "REGISTER":
         # 1. 編集されたデータをDataFrame（表形式）として取得
         
         # 2. スプレッドシートへ保存 (ここが呼び出し位置！)
-        st.save_deck_to_gsheet(deck_name, edited_df)
+        save_deck_to_gsheet(deck_name, edited_df)
         
         
         st.success("スプレッドシートに保存しました！")
@@ -87,7 +87,7 @@ elif st.session_state.page == "REGISTER":
 # 3. デッキ選択画面
 elif st.session_state.page == "SELECT_DECK":
     st.title("🎮 デッキ選択")
-    deck_files = st.load_deck_names()  # スプレッドシートからデッキ名を取得
+    deck_files =load_deck_names()  # スプレッドシートからデッキ名を取得
     
     if len(deck_files) == 0:
         st.warning("デッキがありません")
