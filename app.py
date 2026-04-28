@@ -122,7 +122,7 @@ elif st.session_state.page == "BATTLE":
             st.write(f"**")
             if st.button(f"使う", key=f"play_{i}", use_container_width=True):
                 # ダメージ処理
-                dmg = random.randint(card["最小ダメ"], card["最大ダメ"])
+                dmg = random.randint(int(card["最小ダメ"]), int(card["最大ダメ"]))
                 st.session_state.cpu_hp -= dmg
                 st.session_state.player_hp -= random.randint(10, 15) # 敵の反撃
                 
