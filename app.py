@@ -11,14 +11,14 @@ conn = st.connection("gsheets", type=GSheetsConnection)
 # デッキを保存する関数
 def save_deck_to_gsheet(deck_name, df):
     # すべてのデータを一度読み込み、新しいデータを追加して書き戻す
-    existing_data = conn.read(worksheet="AllDecks")
+    existing_data = conn.read()
     df["deck_name"] = deck_name # どのデッキのカードか判別する列を追加
     updated_df = pd.concat([existing_data, df], ignore_index=True)
-    conn.update(worksheet="AllDecks", data=updated_df)
+    conn.update( data=updated_df)
 
 # デッキ一覧を取得する関数
 def load_deck_names():
-    df = conn.read(worksheet="AllDecks")
+    df = conn.read()
     return df["deck_name"].unique()
 
 # --- 設定と初期化 ---
@@ -95,7 +95,7 @@ elif st.session_state.page == "SELECT_DECK":
     else:
         selected_file = st.selectbox("デッキ選択", deck_files)
         if st.button("バトル開始！"):
-            my_deck = conn.read(deck_files=selected_file)
+            my_deck = conn.read(worksheet=selected_file)
             if len(my_deck) < 3:
                 st.error("カードは3枚以上登録してください！")
             else:
