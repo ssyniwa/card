@@ -66,9 +66,9 @@ elif st.session_state.page == "REGISTER":
 
     if st.button("このデッキを保存して戻る", type="primary"):
         # 1. 編集されたデータをDataFrame（表形式）として取得
-        
+        edited_frame_df=pd.DataFrame(edited_df)
         # 2. スプレッドシートへ保存 (ここが呼び出し位置！)
-        save_deck_to_gsheet(deck_name, edited_df)
+        save_deck_to_gsheet(deck_name, edited_frame_df)
         
         
         st.success("スプレッドシートに保存しました！")
