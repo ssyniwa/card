@@ -7,17 +7,17 @@ st.set_page_config(page_title="Card Battle Game", layout="centered")
 # カードデータの定義（画像URLと効果）
 CARD_DATA = {
     "火炎": {
-        "image": "images/kyle.png",
+        "image": "img/kyle.png",
         "dmg": (15, 25),
         "desc": "大ダメージを与える"
     },
     "斬撃": {
-        "image": "images/elena.png",
+        "image": "img/elena.png",
         "dmg": (8, 12),
         "desc": "安定した攻撃"
     },
     "祈り": {
-        "image": "images/dragon.png",
+        "image": "img/dragon.png",
         "dmg": (0, 0),
         "desc": "HPを大幅に回復"
     }
