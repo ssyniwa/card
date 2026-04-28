@@ -30,8 +30,8 @@ if not os.path.exists("decks"):
 if 'page' not in st.session_state:
     st.session_state.page = "HOME"
 if 'player_hp' not in st.session_state:
-    st.session_state.player_hp = 1000
-    st.session_state.cpu_hp = 1000
+    st.session_state.player_hp = 300
+    st.session_state.cpu_hp = 300
     st.session_state.hand = [] # 現在の手札
 
 # --- 画面描画 ---
@@ -100,8 +100,8 @@ elif st.session_state.page == "SELECT_DECK":
                 st.error("カードは3枚以上登録してください！")
             else:
                 st.session_state.full_deck = my_deck.to_dict(orient="records") # デッキ全体をセッションに保存
-                st.session_state.player_hp = 1000
-                st.session_state.cpu_hp = 1000
+                st.session_state.player_hp = 300
+                st.session_state.cpu_hp = 300
                 # 最初の3枚をドロー
                 st.session_state.hand = random.sample(st.session_state.full_deck, 3)
                 st.session_state.page = "BATTLE"
