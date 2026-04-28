@@ -8,17 +8,17 @@ st.title("🃏 画像付き！カードバトル")
 # カードデータの定義（画像URLと効果）
 CARD_DATA = {
     "攻撃": {
-        "image": "https://raw.githubusercontent.com/google/fonts/main/ofl/notoemoji/img/2694.png", # 剣の画像
+        "image": "img/kyle.png", # 剣の画像
         "desc": "敵にダメージを与える",
         "color": "red"
     },
     "回復": {
-        "image": "https://raw.githubusercontent.com/google/fonts/main/ofl/notoemoji/img/1f496.png", # ハートの画像
+        "image": "img/elena.png", # ハートの画像
         "desc": "自分のHPを回復する",
         "color": "green"
     },
     "必殺": {
-        "image": "https://raw.githubusercontent.com/google/fonts/main/ofl/notoemoji/img/1f525.png", # 炎の画像
+        "image": "img/dragon.png", # 炎の画像
         "desc": "大ダメージを与える",
         "color": "orange"
     }
