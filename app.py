@@ -3,6 +3,23 @@ import random
 import json
 import os
 import pandas as pd
+from streamlit_gsheets import GSheetsConnection
+
+# スプレッドシートへの接続設定
+conn = st.connection("gsheets", type=GSheetsConnection)
+
+# デッキを保存する関数
+def save_deck_to_gsheet(deck_name, df):
+    # すべてのデータを一度読み込み、新しいデータを追加して書き戻す
+    existing_data = conn.read(worksheet="AllDecks")
+    df["deck_name"] = deck_name # どのデッキのカードか判別する列を追加
+    updated_df = pd.concat([existing_data, df], ignore_index=True)
+    conn.update(worksheet="AllDecks", data=updated_df)
+
+# デッキ一覧を取得する関数
+def load_deck_names():
+    df = conn.read(worksheet="AllDecks")
+    return df["deck_name"].unique()
 
 # --- 設定と初期化 ---
 st.set_page_config(page_title="Card Deck Builder", layout="centered")
@@ -13,8 +30,8 @@ if not os.path.exists("decks"):
 if 'page' not in st.session_state:
     st.session_state.page = "HOME"
 if 'player_hp' not in st.session_state:
-    st.session_state.player_hp = 100
-    st.session_state.cpu_hp = 100
+    st.session_state.player_hp = 1000
+    st.session_state.cpu_hp = 1000
     st.session_state.hand = [] # 現在の手札
 
 # --- 画面描画 ---
@@ -53,11 +70,13 @@ elif st.session_state.page == "REGISTER":
     )
 
     if st.button("このデッキを保存して戻る", type="primary"):
-        # JSONとして保存
-        cards_list = edited_df.to_dict(orient="records")
-        with open(f"decks/{deck_name}.json", "w", encoding="utf-8") as f:
-            json.dump(cards_list, f, ensure_ascii=False, indent=4)
-        st.success("保存完了！")
+        # 1. 編集されたデータをDataFrame（表形式）として取得
+        
+        # 2. スプレッドシートへ保存 (ここが呼び出し位置！)
+        st.save_deck_to_gsheet(deck_name, edited_df)
+        
+        
+        st.success("スプレッドシートに保存しました！")
         st.session_state.page = "HOME"
         st.rerun()
     
@@ -68,7 +87,7 @@ elif st.session_state.page == "REGISTER":
 # 3. デッキ選択画面
 elif st.session_state.page == "SELECT_DECK":
     st.title("🎮 デッキ選択")
-    deck_files = [f for f in os.listdir("decks") if f.endswith(".json")]
+    deck_files = st.load_deck_names()  # スプレッドシートからデッキ名を取得
     
     if len(deck_files) == 0:
         st.warning("デッキがありません")
@@ -76,15 +95,13 @@ elif st.session_state.page == "SELECT_DECK":
     else:
         selected_file = st.selectbox("デッキ選択", deck_files)
         if st.button("バトル開始！"):
-            with open(f"decks/{selected_file}", "r", encoding="utf-8") as f:
-                full_deck = json.load(f)
-            
-            if len(full_deck) < 3:
+            my_deck = conn.read(deck_files=selected_file)
+            if len(my_deck) < 3:
                 st.error("カードは3枚以上登録してください！")
             else:
-                st.session_state.full_deck = full_deck
-                st.session_state.player_hp = 100
-                st.session_state.cpu_hp = 100
+                st.session_state.full_deck = my_deck.to_dict(orient="records") # デッキ全体をセッションに保存
+                st.session_state.player_hp = 1000
+                st.session_state.cpu_hp = 1000
                 # 最初の3枚をドロー
                 st.session_state.hand = random.sample(st.session_state.full_deck, 3)
                 st.session_state.page = "BATTLE"
