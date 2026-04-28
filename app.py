@@ -1,94 +1,131 @@
 import streamlit as st
 import random
+import json
+import os
+import pandas as pd
 
 # --- 設定と初期化 ---
-st.set_page_config(page_title="Card Battle Game", layout="centered")
+st.set_page_config(page_title="Card Deck Builder", layout="centered")
 
-# カードデータの定義（画像URLと効果）
-CARD_DATA = {
-    "火炎": {
-        "image": "img/kyle.png",
-        "dmg": (15, 25),
-        "desc": "大ダメージを与える"
-    },
-    "斬撃": {
-        "image": "img/elena.png",
-        "dmg": (8, 12),
-        "desc": "安定した攻撃"
-    },
-    "祈り": {
-        "image": "img/dragon.png",
-        "dmg": (0, 0),
-        "desc": "HPを大幅に回復"
-    }
-}
+if not os.path.exists("decks"):
+    os.makedirs("decks")
 
+if 'page' not in st.session_state:
+    st.session_state.page = "HOME"
 if 'player_hp' not in st.session_state:
-    st.session_state.player_hp = 50
-    st.session_state.cpu_hp = 50
-    st.session_state.game_over = False
-    st.session_state.result_msg = ""
+    st.session_state.player_hp = 100
+    st.session_state.cpu_hp = 100
+    st.session_state.hand = [] # 現在の手札
 
-# --- 勝敗判定の関数 ---
-def check_winner():
-    if st.session_state.cpu_hp <= 0:
-        st.session_state.cpu_hp = 0
-        st.session_state.game_over = True
-        st.session_state.result_msg = "WIN"
-    elif st.session_state.player_hp <= 0:
-        st.session_state.player_hp = 0
-        st.session_state.game_over = True
-        st.session_state.result_msg = "LOSE"
+# --- 画面描画 ---
 
-# --- 画面表示 ---
-st.title("⚔️ 画像付き・最終決戦バトル")
+# 1. ホーム画面
+if st.session_state.page == "HOME":
+    st.title("🃏 無限デッキバトラー")
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("🎴 カードを好きなだけ登録する", use_container_width=True):
+            st.session_state.page = "REGISTER"
+            st.rerun()
+    with col2:
+        if st.button("⚔️ ゲームを開始する", use_container_width=True):
+            st.session_state.page = "SELECT_DECK"
+            st.rerun()
 
-# ステータス表示（体力ゲージ）
-st.write(f"### YOUR HP: {st.session_state.player_hp}")
-st.progress(max(0, min(st.session_state.player_hp / 100, 1.0)))
-st.write(f"### ENEMY HP: {st.session_state.cpu_hp}")
-st.progress(max(0, min(st.session_state.cpu_hp / 100, 1.0)))
+# 2. カード登録画面（データエディタ使用）
+elif st.session_state.page == "REGISTER":
+    st.title("📝 デッキ編集")
+    deck_name = st.text_input("デッキ名", "MyCustomDeck")
+    
+    st.write("表にカード情報を入力してください（行を追加できます）")
+    
+    # 初期データ
+    default_data = [
+        {"カード名": "火炎", "画像URL": "img/fireball.png", "最小ダメ": 10, "最大ダメ": 20},
+    ]
+    
+    # データエディタを表示（行の追加・削除を許可）
+    edited_df = st.data_editor(
+        pd.DataFrame(default_data), 
+        num_rows="dynamic", 
+        use_container_width=True,
+        key="deck_editor"
+    )
 
-st.divider()
+    if st.button("このデッキを保存して戻る", type="primary"):
+        # JSONとして保存
+        cards_list = edited_df.to_dict(orient="records")
+        with open(f"decks/{deck_name}.json", "w", encoding="utf-8") as f:
+            json.dump(cards_list, f, ensure_ascii=False, indent=4)
+        st.success("保存完了！")
+        st.session_state.page = "HOME"
+        st.rerun()
+    
+    if st.button("戻る"):
+        st.session_state.page = "HOME"
+        st.rerun()
 
-# --- 画面の分岐処理 ---
-if not st.session_state.game_over:
-    # 【プレイ中】画像付きカードを表示
-    st.write("### 手札を選択してください")
-    cols = st.columns(3)
-
-    for i, (name, info) in enumerate(CARD_DATA.items()):
-        with cols[i]:
-            # カード画像を表示
-            st.image(info["image"], use_container_width=True)
-            st.write(f"**{name}**")
-            st.caption(info["desc"])
+# 3. デッキ選択画面
+elif st.session_state.page == "SELECT_DECK":
+    st.title("🎮 デッキ選択")
+    deck_files = [f for f in os.listdir("decks") if f.endswith(".json")]
+    
+    if len(deck_files) == 0:
+        st.warning("デッキがありません")
+        if st.button("戻る"): st.session_state.page = "HOME"; st.rerun()
+    else:
+        selected_file = st.selectbox("デッキ選択", deck_files)
+        if st.button("バトル開始！"):
+            with open(f"decks/{selected_file}", "r", encoding="utf-8") as f:
+                full_deck = json.load(f)
             
-            # 選択ボタン
-            if st.button(f"{name}を使う", key=f"btn_{name}", use_container_width=True):
-                # プレイヤーの行動
-                p_dmg = random.randint(*info['dmg'])
-                if name == "祈り": 
-                    st.session_state.player_hp += 20
-                st.session_state.cpu_hp -= p_dmg
-                
-                # 敵の反撃（プレイヤーが勝っていなければ）
-                if st.session_state.cpu_hp > 0:
-                    st.session_state.player_hp -= random.randint(10, 18)
-                
-                check_winner()
+            if len(full_deck) < 3:
+                st.error("カードは3枚以上登録してください！")
+            else:
+                st.session_state.full_deck = full_deck
+                st.session_state.player_hp = 100
+                st.session_state.cpu_hp = 100
+                # 最初の3枚をドロー
+                st.session_state.hand = random.sample(st.session_state.full_deck, 3)
+                st.session_state.page = "BATTLE"
                 st.rerun()
 
-else:
-    # 【ゲーム終了時】結果を表示
-    if st.session_state.result_msg == "WIN":
-        st.balloons() # 勝利の風船
-        st.success("# 🎉 勝利！あなたは伝説の勇者となりました！")
-    else:
-        st.snow()     # 敗北の雪
-        st.error("# 💀 GAME OVER... 敗北してしまった。")
+# 4. バトル画面
+elif st.session_state.page == "BATTLE":
+    st.title("⚔️ バトル！")
     
-    if st.button("もう一度最初から遊ぶ", type="primary", use_container_width=True):
-        for key in list(st.session_state.keys()):
-            del st.session_state[key]
-        st.rerun()
+    # HP表示
+    c1, c2 = st.columns(2)
+    c1.metric("PLAYER HP", st.session_state.player_hp)
+    c2.metric("ENEMY HP", st.session_state.cpu_hp)
+    
+    st.divider()
+    
+    # 手札（ランダムに選ばれた3枚）を表示
+    st.write("### あなたの手札（ランダムに選出）")
+    cols = st.columns(3)
+    for i, card in enumerate(st.session_state.hand):
+        with cols[i]:
+            st.image(card["画像URL"], use_container_width=True)
+            st.write(f"**")
+            if st.button(f"使う", key=f"play_{i}", use_container_width=True):
+                # ダメージ処理
+                dmg = random.randint(card["最小ダメ"], card["最大ダメ"])
+                st.session_state.cpu_hp -= dmg
+                st.session_state.player_hp -= random.randint(10, 15) # 敵の反撃
+                
+                # 次のターン用に新しい3枚をドロー
+                st.session_state.hand = random.sample(st.session_state.full_deck, 3)
+                
+                if st.session_state.cpu_hp <= 0 or st.session_state.player_hp <= 0:
+                    st.session_state.page = "RESULT"
+                st.rerun()
+
+# 5. 結果画面
+elif st.session_state.page == "RESULT":
+    if st.session_state.player_hp > st.session_state.cpu_hp:
+        st.balloons(); st.success("WIN!")
+    else:
+        st.error("LOSE...")
+    if st.button("HOME"):
+        st.session_state.page = "HOME"; st.rerun()
