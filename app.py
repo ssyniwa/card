@@ -89,23 +89,19 @@ elif st.session_state.page == "SELECT_DECK":
     st.title("🎮 デッキ選択")
     deck_files =load_deck_names()  # スプレッドシートからデッキ名を取得
     
-    if len(deck_files) == 0:
-        st.warning("デッキがありません")
-        if st.button("戻る"): st.session_state.page = "HOME"; st.rerun()
-    else:
-        selected_file = st.selectbox("デッキ選択", deck_files)
-        if st.button("バトル開始！"):
-            my_deck = conn.read(worksheet=selected_file)
-            if len(my_deck) < 3:
-                st.error("カードは3枚以上登録してください！")
-            else:
-                st.session_state.full_deck = my_deck.to_dict(orient="records") # デッキ全体をセッションに保存
-                st.session_state.player_hp = 300
-                st.session_state.cpu_hp = 300
-                # 最初の3枚をドロー
-                st.session_state.hand = random.sample(st.session_state.full_deck, 3)
-                st.session_state.page = "BATTLE"
-                st.rerun()
+    selected_file = st.selectbox("デッキ選択", deck_files)
+    if st.button("バトル開始！"):
+        my_deck = conn.read(worksheet=selected_file)
+        if len(my_deck) < 3:
+            st.error("カードは3枚以上登録してください！")
+        else:
+            st.session_state.full_deck = my_deck.to_dict(orient="records") # デッキ全体をセッションに保存
+            st.session_state.player_hp = 300
+            st.session_state.cpu_hp = 300
+            # 最初の3枚をドロー
+            st.session_state.hand = random.sample(st.session_state.full_deck, 3)
+            st.session_state.page = "BATTLE"
+            st.rerun()
 
 # 4. バトル画面
 elif st.session_state.page == "BATTLE":
