@@ -69,7 +69,7 @@ elif st.session_state.page == "REGISTER":
         edited_frame_df=pd.DataFrame(edited_df)
         # 2. スプレッドシートへ保存 (ここが呼び出し位置！)
         save_deck_to_gsheet(deck_name, edited_frame_df)
-        
+        st.cache_data.clear()
         
         st.success("スプレッドシートに保存しました！")
         st.session_state.page = "HOME"
@@ -83,7 +83,10 @@ elif st.session_state.page == "REGISTER":
 elif st.session_state.page == "SELECT_DECK":
     st.title("🎮 デッキ選択")
     all_data_df=conn.read()
-    deck_files = all_data_df["deck_name"].unique()  # スプレッドシートからデッキ名を取得
+    # 【デバッグ用】読み込んだデータの中身を画面に表示して確認
+    st.write("デバッグ: スプレッドシートの中身", all_data_df)
+    st.write("デバッグ: 存在する列名", all_data_df.columns.tolist())
+    deck_files = all_data_df["deck_name"].unique() if "deck_name" in all_data_df.columns else [] # スプレッドシートからデッキ名を取得
 
     selected_file = st.selectbox("デッキ選択", deck_files)
     if st.button("バトル開始！"):
