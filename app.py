@@ -175,6 +175,8 @@ elif st.session_state.page == "BATTLE":
                 # 2. 敵の行動フェーズ（プレイヤーが勝っていなければ）
                 if st.session_state.cpu_hp > 0:
                     enemy_card = random.choice(st.session_state.en_full_deck)
+                    st.image(enemy_card["画像URL"], use_container_width=True)
+                    st.write(f"**{enemy_card['カード名']}** - ダメージ: {enemy_card['最小ダメ']} ~ {enemy_card['最大ダメ']}")
                     e_type = enemy_card.get("type", "攻撃")
                     if e_type=="攻撃":
                         enemy_dmg = random.randint(int(float(enemy_card["最小ダメ"])), int(float(enemy_card["最大ダメ"])))
