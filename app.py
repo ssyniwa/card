@@ -127,7 +127,7 @@ elif st.session_state.page == "BATTLE":
             if st.button(f"使う", key=f"play_{i}", use_container_width=True):
                 card_type = card.get("type", "攻撃")
                 log = []
-                poison=0
+                
                 defense=0
                 # 1. プレイヤーの行動フェーズ
                 if card_type == "攻撃":
@@ -168,6 +168,7 @@ elif st.session_state.page == "BATTLE":
                     # 防御判定
                     if st.session_state.defense_flag:
                         enemy_dmg = enemy_dmg-defense
+                        if enemy_dmg < 0: enemy_dmg = 0
                         st.session_state.defense_flag = False # 防御消費
                     
                     st.session_state.player_hp -= enemy_dmg
@@ -189,9 +190,9 @@ elif st.session_state.page == "BATTLE":
 
 # 5. 結果画面
 elif st.session_state.page == "RESULT":
-    if st.session_state.player_hp > st.session_state.cpu_hp:
+    if st.session_state.player_hp>0 and st.session_state.cpu_hp<=0:
         st.balloons(); st.success("WIN!")
-    else:
+    elif st.session_state.player_hp<=0:
         st.error("LOSE...")
     if st.button("HOME"):
         st.session_state.page = "HOME"; st.rerun()
