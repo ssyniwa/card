@@ -114,7 +114,7 @@ elif st.session_state.page == "BATTLE":
     
     # HP表示
     c1, c2 = st.columns(2)
-    c1.image(st.session_state.player_img, width=150)
+    c1.image(st.session_state.player_img, width=300)
     c1.metric("PLAYER HP", st.session_state.player_hp)
     c1.progress(max(0,min(st.session_state.player_hp/100,1.0)))
     c2.metric("ENEMY HP", st.session_state.cpu_hp)
