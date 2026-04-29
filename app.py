@@ -93,16 +93,21 @@ elif st.session_state.page == "SELECT_DECK":
     st.write("デバッグ: 存在する列名", all_data_df.columns.tolist())
     deck_files = all_data_df["deck_name"].unique() if "deck_name" in all_data_df.columns else [] # スプレッドシートからデッキ名を取得
 
-    selected_file = st.selectbox("デッキ選択", deck_files)
+    selected_file = st.selectbox("プレイヤーデッキ選択", deck_files)
+    selected_enfile= st.selectbox("CPUデッキ選択", deck_files)
     if st.button("バトル開始！"):
-        my_deck = all_data_df[all_data_df["deck_name"] == selected_file]  # 選択したデッキのカードデータを読み込む
+        my_deck = all_data_df[all_data_df["deck_name"] == selected_file]
+        en_deck = all_data_df[all_data_df["deck_name"] == selected_enfile]
+        en_deck_filtered = en_deck[en_deck["type"].isin(["攻撃","回復"])]  # CPUは攻撃カードのみ使用
         if len(my_deck) < 3:
             st.error("カードは3枚以上登録してください！")
         else:
             st.session_state.full_deck = my_deck.to_dict(orient="records")  # デッキ全体をセッションに保存
             st.session_state.player_hp = 300
+            st.session_state.en_full_deck = en_deck_filtered.to_dict(orient="records")  # CPUのデッキ全体をセッションに保存
             st.session_state.cpu_hp = 300
             st.session_state.player_img = my_deck.iloc[0]["chara_image"]
+            st.session_state.en_img = en_deck.iloc[0]["chara_image"]
             # 最初の3枚をドロー
             st.session_state.hand = random.sample(st.session_state.full_deck, 3)
             st.session_state.page = "BATTLE"
@@ -117,6 +122,7 @@ elif st.session_state.page == "BATTLE":
     c1.image(st.session_state.player_img, width=300)
     c1.metric("PLAYER HP", st.session_state.player_hp)
     c1.progress(max(0,min(st.session_state.player_hp/100,1.0)))
+    c2.image(st.session_state.en_img, width=300)
     c2.metric("ENEMY HP", st.session_state.cpu_hp)
     c2.progress(max(0,min(st.session_state.cpu_hp/100,1.0)))
 
@@ -168,16 +174,24 @@ elif st.session_state.page == "BATTLE":
                     log.append(f"🧪 {card['カード名']}！ 敵を毒状態にした！")
                 # 2. 敵の行動フェーズ（プレイヤーが勝っていなければ）
                 if st.session_state.cpu_hp > 0:
-                    enemy_dmg = random.randint(10, 15)
-                    enemy_dmg = int(enemy_dmg * st.session_state.debuff_multiplier)
-                    # 防御判定
-                    if st.session_state.defense_flag:
-                        enemy_dmg = enemy_dmg-defense
-                        if enemy_dmg < 0: enemy_dmg = 0
-                        st.session_state.defense_flag = False # 防御消費
+                    enemy_card = random.choice(st.session_state.en_full_deck)
+                    e_type = enemy_card.get("type", "攻撃")
+                    if e_type=="攻撃":
+                        enemy_dmg = random.randint(int(float(enemy_card["最小ダメ"])), int(float(enemy_card["最大ダメ"])))
+                        enemy_dmg = int(enemy_dmg * st.session_state.debuff_multiplier)
+                        # 防御判定
+                        if st.session_state.defense_flag:
+                            enemy_dmg = enemy_dmg-defense
+                            if enemy_dmg < 0: enemy_dmg = 0
+                            st.session_state.defense_flag = False # 防御消費
                     
-                    st.session_state.player_hp -= enemy_dmg
-                    log.append(f"👾 敵の攻撃！ {enemy_dmg} ダメージを受けた！")
+                        st.session_state.player_hp -= enemy_dmg
+                        log.append(f"👾 敵の攻撃！ {enemy_dmg} ダメージを受けた！")
+
+                    elif e_type=="回復":
+                        e_heal = random.randint(int(float(enemy_card["最小ダメ"])), int(float(enemy_card["最大ダメ"])))
+                        st.session_state.cpu_hp += e_heal
+                        log.append(f"💖 敵の回復！ HPが {e_heal} 回復した！")
 
                 # 3. 継続ダメージ処理（毒など）
                 if st.session_state.poison_turn > 0:
