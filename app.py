@@ -57,7 +57,7 @@ elif st.session_state.page == "REGISTER":
     
     # 初期データ
     default_data = [
-        {"カード名": "火炎", "画像URL": "img/fireball.png", "最小ダメ": 10, "最大ダメ": 20},
+        {"カード名": "火炎", "画像URL": "img/fireball.png", "最小ダメ": 10, "最大ダメ": 20, "type": "攻撃"},
     ]
     
     # データエディタを表示（行の追加・削除を許可）
