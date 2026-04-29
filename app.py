@@ -58,7 +58,7 @@ elif st.session_state.page == "REGISTER":
     
     # 初期データ
     default_data = [
-        {"カード名": "火炎", "画像URL": "img/fireball.png", "最小ダメ": 10, "最大ダメ": 20, "type": "攻撃"},
+        {"カード名": "火炎", "画像URL": "img/fireball.png", "最小ダメ": 10, "最大ダメ": 20, "type": "攻撃","chara_image": "img/char_fire.png"},
     ]
     
     # データエディタを表示（行の追加・削除を許可）
@@ -102,6 +102,7 @@ elif st.session_state.page == "SELECT_DECK":
             st.session_state.full_deck = my_deck.to_dict(orient="records")  # デッキ全体をセッションに保存
             st.session_state.player_hp = 300
             st.session_state.cpu_hp = 300
+            st.session_state.player_img = my_deck.iloc[0]["chara_image"]
             # 最初の3枚をドロー
             st.session_state.hand = random.sample(st.session_state.full_deck, 3)
             st.session_state.page = "BATTLE"
@@ -113,11 +114,14 @@ elif st.session_state.page == "BATTLE":
     
     # HP表示
     c1, c2 = st.columns(2)
+    c1.image(st.session_state.player_img, width=150)
     c1.metric("PLAYER HP", st.session_state.player_hp)
+    c1.progress(max(0,min(st.session_state.player_hp/100,1.0)))
     c2.metric("ENEMY HP", st.session_state.cpu_hp)
-    
+    c2.progress(max(0,min(st.session_state.cpu_hp/100,1.0)))
+
     st.divider()
-    
+
     # 手札（ランダムに選ばれた3枚）を表示
     st.write("### あなたの手札（ランダムに選出）")
     cols = st.columns(3)
