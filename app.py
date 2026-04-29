@@ -32,6 +32,7 @@ if 'player_hp' not in st.session_state:
 if 'defense_flag' not in st.session_state: st.session_state.defense_flag = False
 if 'buff_multiplier' not in st.session_state: st.session_state.buff_multiplier = 1.0
 if 'poison_turn' not in st.session_state: st.session_state.poison_turn = 0
+if 'poison' not in st.session_state: st.session_state.poison = 0
 if 'debuff_multiplier' not in st.session_state: st.session_state.debuff_multiplier = 1.0
 # --- 画面描画 ---
 
@@ -159,7 +160,7 @@ elif st.session_state.page == "BATTLE":
                     log.append(f"❄️ {card['カード名']}！ 敵の攻撃力が{debuff}倍になる！")
                 elif card_type == "状態異常":
                     st.session_state.poison_turn = 3 # 3ターンの毒
-                    poison=random.randint(int(float(card["最小ダメ"])), int(float(card["最大ダメ"])))
+                    st.session_state.poison = random.randint(int(float(card["最小ダメ"])), int(float(card["最大ダメ"])))
                     log.append(f"🧪 {card['カード名']}！ 敵を毒状態にした！")
                 # 2. 敵の行動フェーズ（プレイヤーが勝っていなければ）
                 if st.session_state.cpu_hp > 0:
@@ -176,9 +177,9 @@ elif st.session_state.page == "BATTLE":
 
                 # 3. 継続ダメージ処理（毒など）
                 if st.session_state.poison_turn > 0:
-                    st.session_state.cpu_hp -= poison
+                    st.session_state.cpu_hp -= st.session_state.poison
                     st.session_state.poison_turn -= 1
-                    log.append(f"状態異常ダメージ！ 敵のHPが {poison} 減った（残り {st.session_state.poison_turn} ターン）")
+                    log.append(f"状態異常ダメージ！ 敵のHPが {st.session_state.poison} 減った（残り {st.session_state.poison_turn} ターン）")
 
                 st.session_state.battle_log = " / ".join(log)
                 # 次のターン用に新しい3枚をドロー
