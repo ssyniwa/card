@@ -28,7 +28,11 @@ if 'player_hp' not in st.session_state:
     st.session_state.player_hp = 300
     st.session_state.cpu_hp = 300
     st.session_state.hand = [] # 現在の手札
-
+# --- 事前に session_state に追加すべき変数 ---
+if 'defense_flag' not in st.session_state: st.session_state.defense_flag = False
+if 'buff_multiplier' not in st.session_state: st.session_state.buff_multiplier = 1.0
+if 'poison_turn' not in st.session_state: st.session_state.poison_turn = 0
+if 'debuff_multiplier' not in st.session_state: st.session_state.debuff_multiplier = 1.0
 # --- 画面描画 ---
 
 # 1. ホーム画面
@@ -121,13 +125,61 @@ elif st.session_state.page == "BATTLE":
             st.image(card["画像URL"], use_container_width=True)
             st.write(f"**{card['カード名']}** - ダメージ: {card['最小ダメ']} ~ {card['最大ダメ']}")
             if st.button(f"使う", key=f"play_{i}", use_container_width=True):
-                # ダメージ処理
-                min_val = int(float(card["最小ダメ"]))
-                max_val = int(float(card["最大ダメ"]))
-                dmg = random.randint(min_val, max_val)
-                st.session_state.cpu_hp -= dmg
-                st.session_state.player_hp -= random.randint(10, 15) # 敵の反撃
-                
+                card_type = card.get("type", "攻撃")
+                log = []
+                poison=0
+                defense=0
+                # 1. プレイヤーの行動フェーズ
+                if card_type == "攻撃":
+                    base_dmg = random.randint(int(float(card["最小ダメ"])), int(float(card["最大ダメ"])))
+                    total_dmg = int(base_dmg * st.session_state.buff_multiplier)
+                    st.session_state.cpu_hp -= total_dmg
+                    log.append(f"💥 {card['カード名']}！ 敵に {total_dmg} ダメージ！")
+                    st.session_state.buff_multiplier = 1.0 # バフ消費
+                    st.session_state.debuff_multiplier = 1.0 # デバフ消費
+
+                elif card_type == "回復":
+                    heal = random.randint(int(float(card["最小ダメ"])), int(float(card["最大ダメ"])))
+                    st.session_state.player_hp += heal
+                    log.append(f"💖 {card['カード名']}！ HPが {heal} 回復した！")
+
+                elif card_type == "防御":
+                    defense = random.randint(int(float(card["最小ダメ"])), int(float(card["最大ダメ"])))
+                    st.session_state.defense_flag = True
+                    log.append(f"🛡️ {card['カード名']}！ 次のダメージを半減する！")
+
+                elif card_type == "バフ":
+                    buff=random.randint(int(float(card["最小ダメ"])), int(float(card["最大ダメ"])))
+                    st.session_state.buff_multiplier = buff
+                    log.append(f"🔥 {card['カード名']}！ 次の攻撃力が{buff}倍になる！")
+
+                elif card_type == "デバフ":
+                    debuff=random.randint(int(float(card["最小ダメ"])), int(float(card["最大ダメ"])))
+                    st.session_state.debuff_multiplier = debuff
+                    log.append(f"❄️ {card['カード名']}！ 敵の攻撃力が{debuff}倍になる！")
+                elif card_type == "状態異常":
+                    st.session_state.poison_turn = 3 # 3ターンの毒
+                    poison=random.randint(int(float(card["最小ダメ"])), int(float(card["最大ダメ"])))
+                    log.append(f"🧪 {card['カード名']}！ 敵を毒状態にした！")
+                # 2. 敵の行動フェーズ（プレイヤーが勝っていなければ）
+                if st.session_state.cpu_hp > 0:
+                    enemy_dmg = random.randint(10, 15)
+                    enemy_dmg = int(enemy_dmg * st.session_state.debuff_multiplier)
+                    # 防御判定
+                    if st.session_state.defense_flag:
+                        enemy_dmg = enemy_dmg-defense
+                        st.session_state.defense_flag = False # 防御消費
+                    
+                    st.session_state.player_hp -= enemy_dmg
+                    log.append(f"👾 敵の攻撃！ {enemy_dmg} ダメージを受けた！")
+
+                # 3. 継続ダメージ処理（毒など）
+                if st.session_state.poison_turn > 0:
+                    st.session_state.cpu_hp -= poison
+                    st.session_state.poison_turn -= 1
+                    log.append(f"🤢 毒ダメージ！ 敵のHPが {poison} 減った（残り {st.session_state.poison_turn} ターン）")
+
+                st.session_state.battle_log = " / ".join(log)
                 # 次のターン用に新しい3枚をドロー
                 st.session_state.hand = random.sample(st.session_state.full_deck, 3)
                 
