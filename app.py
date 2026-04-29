@@ -119,7 +119,7 @@ elif st.session_state.page == "BATTLE":
     for i, card in enumerate(st.session_state.hand):
         with cols[i]:
             st.image(card["画像URL"], use_container_width=True)
-            st.write(f"**")
+            st.write(f"**{card['カード名']}** - ダメージ: {card['最小ダメ']} ~ {card['最大ダメ']}")
             if st.button(f"使う", key=f"play_{i}", use_container_width=True):
                 # ダメージ処理
                 min_val = int(float(card["最小ダメ"]))
