@@ -11,7 +11,7 @@ conn = st.connection("gsheets", type=GSheetsConnection)
 # デッキを保存する関数
 def save_deck_to_gsheet(deck_name, df):
     # すべてのデータを一度読み込み、新しいデータを追加して書き戻す
-    existing_data = conn.read()
+    existing_data = conn.read(ttl=0)  # キャッシュを無効にして最新のデータを取得 
     df["deck_name"] = deck_name # どのデッキのカードか判別する列を追加
     updated_df = pd.concat([existing_data, df], ignore_index=True)
     conn.update( data=updated_df)
