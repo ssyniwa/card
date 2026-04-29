@@ -177,7 +177,7 @@ elif st.session_state.page == "BATTLE":
                 if st.session_state.poison_turn > 0:
                     st.session_state.cpu_hp -= poison
                     st.session_state.poison_turn -= 1
-                    log.append(f"🤢 毒ダメージ！ 敵のHPが {poison} 減った（残り {st.session_state.poison_turn} ターン）")
+                    log.append(f"状態異常ダメージ！ 敵のHPが {poison} 減った（残り {st.session_state.poison_turn} ターン）")
 
                 st.session_state.battle_log = " / ".join(log)
                 # 次のターン用に新しい3枚をドロー
