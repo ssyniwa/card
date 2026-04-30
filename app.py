@@ -121,10 +121,10 @@ elif st.session_state.page == "BATTLE":
     c1, c2 = st.columns(2)
     c1.image(st.session_state.player_img, width=300)
     c1.metric("PLAYER HP", st.session_state.player_hp)
-    c1.progress(max(0,min(st.session_state.player_hp/100,1.0)))
+    c1.progress(max(0,min(st.session_state.player_hp/300,1.0)))
     c2.image(st.session_state.en_img, width=300)
     c2.metric("ENEMY HP", st.session_state.cpu_hp)
-    c2.progress(max(0,min(st.session_state.cpu_hp/100,1.0)))
+    c2.progress(max(0,min(st.session_state.cpu_hp/300,1.0)))
     c2.write("---")
     if 'enemy_last_card' in st.session_state:
         encard = st.session_state.enemy_last_card
