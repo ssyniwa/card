@@ -125,7 +125,14 @@ elif st.session_state.page == "BATTLE":
     c2.image(st.session_state.en_img, width=300)
     c2.metric("ENEMY HP", st.session_state.cpu_hp)
     c2.progress(max(0,min(st.session_state.cpu_hp/100,1.0)))
+    c2.write("---")
+    if 'enemy_last_card' in st.session_state:
+        encard = st.session_state.enemy_last_card
+        c2.write("📢 **敵のターン！**")
+        c2.image(encard["画像URL"], width=100, caption=f"使用カード: {encard['カード名']}")
 
+        # ダメージや効果の簡易説明
+        c2.caption(f"効果: {encard['type']} ({encard['最小ダメ']}～{encard['最大ダメ']})")
     st.divider()
 
     # 手札（ランダムに選ばれた3枚）を表示
@@ -175,10 +182,7 @@ elif st.session_state.page == "BATTLE":
                 # 2. 敵の行動フェーズ（プレイヤーが勝っていなければ）
                 if st.session_state.cpu_hp > 0:
                     enemy_card = random.choice(st.session_state.en_full_deck)
-                    ens=st.columns(1)
-                    with ens[0]:
-                        st.image(enemy_card["画像URL"], use_container_width=True)
-                        st.write(f"**{enemy_card['カード名']}** - ダメージ: {enemy_card['最小ダメ']} ~ {enemy_card['最大ダメ']}")
+                    st.session_state.enemy_last_card = enemy_card
                     e_type = enemy_card.get("type", "攻撃")
                     if e_type=="攻撃":
                         enemy_dmg = random.randint(int(float(enemy_card["最小ダメ"])), int(float(enemy_card["最大ダメ"])))
