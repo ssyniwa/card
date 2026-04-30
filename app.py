@@ -129,7 +129,7 @@ elif st.session_state.page == "BATTLE":
     if 'enemy_last_card' in st.session_state:
         encard = st.session_state.enemy_last_card
         c2.write("📢 **敵のターン！**")
-        c2.image(encard["画像URL"], width=100, caption=f"使用カード: {encard['カード名']}")
+        c2.image(encard["画像URL"], width=250, caption=f"使用カード: {encard['カード名']}")
 
         # ダメージや効果の簡易説明
         c2.caption(f"効果: {encard['type']} ({encard['最小ダメ']}～{encard['最大ダメ']})")
