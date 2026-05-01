@@ -6,54 +6,7 @@ import pandas as pd
 from streamlit_gsheets import GSheetsConnection
 
 
-# カードの種類に応じた色の定義
-TYPE_COLORS = {
-    "攻撃": "#FF4B4B",     # 赤
-    "回復": "#28A745",     # 緑
-    "防御": "#007BFF",     # 青
-    "バフ": "#FFD700",     # 金
-    "デバフ": "#808080",   # 灰色
-    "状態異常": "#A020F0"  # 紫
-}
 
-# 光る演出用のCSSを注入
-st.markdown(f"""
-    <style>
-    /* 共通の光る枠線スタイル */
-    .glow-base {{
-        border-radius: 15px;
-        padding: 10px;
-        margin-bottom: 10px;
-        display: inline-block;
-    }}
-
-    /* 各タイプごとの発光定義 (複数のshadowを重ねて強度を出しています) */
-    .glow-攻撃 {{ 
-        border: 5px solid {TYPE_COLORS["攻撃"]}; 
-        box-shadow: 0 0 40px {TYPE_COLORS["攻撃"]}, inset 0 0 10px {TYPE_COLORS["攻撃"]};
-    }}
-    .glow-回復 {{ 
-        border: 5px solid {TYPE_COLORS["回復"]}; 
-        box-shadow: 0 0 40px {TYPE_COLORS["回復"]}, inset 0 0 10px {TYPE_COLORS["回復"]};
-    }}
-    .glow-防御 {{ 
-        border: 5px solid {TYPE_COLORS["防御"]}; 
-        box-shadow: 0 0 40px {TYPE_COLORS["防御"]}, inset 0 0 10px {TYPE_COLORS["防御"]};
-    }}
-    .glow-バフ {{ 
-        border: 5px solid {TYPE_COLORS["バフ"]}; 
-        box-shadow: 0 0 40px {TYPE_COLORS["バフ"]}, inset 0 0 10px {TYPE_COLORS["バフ"]};
-    }}
-    .glow-デバフ {{ 
-        border: 5px solid {TYPE_COLORS["デバフ"]}; 
-        box-shadow: 0 0 40px {TYPE_COLORS["デバフ"]}, inset 0 0 10px {TYPE_COLORS["デバフ"]};
-    }}
-    .glow-状態異常 {{ 
-        border: 5px solid {TYPE_COLORS["状態異常"]}; 
-        box-shadow: 0 0 40px {TYPE_COLORS["状態異常"]}, inset 0 0 10px {TYPE_COLORS["状態異常"]};
-    }}
-    </style>
-    """, unsafe_allow_html=True)
 
 # スプレッドシートへの接続設定
 conn = st.connection("gsheets", type=GSheetsConnection)
