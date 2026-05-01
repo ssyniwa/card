@@ -160,7 +160,7 @@ elif st.session_state.page == "BATTLE":
     
         
 
-    st.divider()
+    
 
     # 手札（ランダムに選ばれた3枚）を表示
     st.write("### あなたの手札（ランダムに選出）")
@@ -262,6 +262,7 @@ elif st.session_state.page == "BATTLE":
         c2.markdown('</div>', unsafe_allow_html=True)
         # ダメージや効果の簡易説明
         c2.caption(f"効果: {encard['type']} ({encard['最小ダメ']}～{encard['最大ダメ']})")
+    st.divider()
     st.rerun()
 
 # 5. 結果画面
