@@ -19,19 +19,19 @@ TYPE_COLORS = {
 # 光る演出用のCSSを注入
 st.markdown(f"""
     <style>
-    @keyframes glow-red {{ 0% {{ box-shadow: 0 0 5px #FF4B4B; }} 50% {{ box-shadow: 0 0 25px #FF4B4B; }} 100% {{ box-shadow: 0 0 5px #FF4B4B; }} }}
-    @keyframes glow-green {{ 0% {{ box-shadow: 0 0 5px #28A745; }} 50% {{ box-shadow: 0 0 25px #28A745; }} 100% {{ box-shadow: 0 0 5px #28A745; }} }}
-    @keyframes glow-blue {{ 0% {{ box-shadow: 0 0 5px #007BFF; }} 50% {{ box-shadow: 0 0 25px #007BFF; }} 100% {{ box-shadow: 0 0 5px #007BFF; }} }}
-    @keyframes glow-gold {{ 0% {{ box-shadow: 0 0 5px #FFD700; }} 50% {{ box-shadow: 0 0 25px #FFD700; }} 100% {{ box-shadow: 0 0 5px #FFD700; }} }}
-    @keyframes glow-gray {{ 0% {{ box-shadow: 0 0 5px #808080; }} 50% {{ box-shadow: 0 0 25px #808080; }} 100% {{ box-shadow: 0 0 5px #808080; }} }}
-    @keyframes glow-purple {{ 0% {{ box-shadow: 0 0 5px #A020F0; }} 50% {{ box-shadow: 0 0 25px #A020F0; }} 100% {{ box-shadow: 0 0 5px #A020F0; }} }}
+    @keyframes glow-red {{ 0% {{ box-shadow: 0 0 5px #FF4B4B; }} 50% {{ box-shadow: 0 0 30px #FF4B4B; }} 100% {{ box-shadow: 0 0 5px #FF4B4B; }} }}
+    @keyframes glow-green {{ 0% {{ box-shadow: 0 0 5px #28A745; }} 50% {{ box-shadow: 0 0 30px #28A745; }} 100% {{ box-shadow: 0 0 5px #28A745; }} }}
+    @keyframes glow-blue {{ 0% {{ box-shadow: 0 0 5px #007BFF; }} 50% {{ box-shadow: 0 0 30px #007BFF; }} 100% {{ box-shadow: 0 0 5px #007BFF; }} }}
+    @keyframes glow-gold {{ 0% {{ box-shadow: 0 0 5px #FFD700; }} 50% {{ box-shadow: 0 0 30px #FFD700; }} 100% {{ box-shadow: 0 0 5px #FFD700; }} }}
+    @keyframes glow-gray {{ 0% {{ box-shadow: 0 0 5px #808080; }} 50% {{ box-shadow: 0 0 30px #808080; }} 100% {{ box-shadow: 0 0 5px #808080; }} }}
+    @keyframes glow-purple {{ 0% {{ box-shadow: 0 0 5px #A020F0; }} 50% {{ box-shadow: 0 0 30px #A020F0; }} 100% {{ box-shadow: 0 0 5px #A020F0; }} }}
 
-    .glow-攻撃 {{ border: 4px solid #FF4B4B !important; animation: glow-red 1.5s infinite; border-radius: 10px; }}
-    .glow-回復 {{ border: 4px solid #28A745 !important; animation: glow-green 1.5s infinite; border-radius: 10px; }}
-    .glow-防御 {{ border: 4px solid #007BFF !important; animation: glow-blue 1.5s infinite; border-radius: 10px; }}
-    .glow-バフ {{ border: 4px solid #FFD700 !important; animation: glow-gold 1.5s infinite; border-radius: 10px; }}
-    .glow-デバフ {{ border: 4px solid #808080 !important; animation: glow-gray 1.5s infinite; border-radius: 10px; }}
-    .glow-状態異常 {{ border: 4px solid #A020F0 !important; animation: glow-purple 1.5s infinite; border-radius: 10px; }}
+    .glow-攻撃 {{ border: 4px solid #FF4B4B !important; animation: glow-red 0.5s infinite; border-radius: 10px; }}
+    .glow-回復 {{ border: 4px solid #28A745 !important; animation: glow-green 0.5s infinite; border-radius: 10px; }}
+    .glow-防御 {{ border: 4px solid #007BFF !important; animation: glow-blue 0.5s infinite; border-radius: 10px; }}
+    .glow-バフ {{ border: 4px solid #FFD700 !important; animation: glow-gold 0.5s infinite; border-radius: 10px; }}
+    .glow-デバフ {{ border: 4px solid #808080 !important; animation: glow-gray 0.5s infinite; border-radius: 10px; }}
+    .glow-状態異常 {{ border: 4px solid #A020F0 !important; animation: glow-purple 0.5s infinite; border-radius: 10px; }}
     </style>
     """, unsafe_allow_html=True)
 
