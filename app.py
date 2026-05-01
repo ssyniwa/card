@@ -156,13 +156,14 @@ elif st.session_state.page == "BATTLE":
     if 'player_last_card' in st.session_state:
         plcard = st.session_state.player_last_card
         plcolor = TYPE_COLORS.get(plcard["type"], "#FFFFFF")
-        st.markdown(f'<div class="flow-{plcard["type"]}">', unsafe_allow_html=True)
+        
         c1.write("📢 **あなたのターン！**")
+        st.markdown(f'<div class="flow-{plcard["type"]}">', unsafe_allow_html=True)
         c1.image(plcard["画像URL"], width=250, caption=f"使用カード: {plcard['カード名']}")
-
+        st.markdown('</div>', unsafe_allow_html=True)
         # ダメージや効果の簡易説明
         c1.caption(f"効果: {plcard['type']} ({plcard['最小ダメ']}～{plcard['最大ダメ']})")
-        st.markdown('</div>', unsafe_allow_html=True)
+        
     c2.image(st.session_state.en_img, width=300)
     c2.metric("ENEMY HP", st.session_state.cpu_hp)
     c2.progress(max(0,min(st.session_state.cpu_hp/300,1.0)))
@@ -170,13 +171,14 @@ elif st.session_state.page == "BATTLE":
     if 'enemy_last_card' in st.session_state:
         encard = st.session_state.enemy_last_card
         encolor = TYPE_COLORS.get(encard["type"], "#FFFFFF")
-        st.markdown(f'<div class="flow-{encard["type"]}">', unsafe_allow_html=True)
+        
         c2.write("📢 **敵のターン！**")
+        st.markdown(f'<div class="flow-{encard["type"]}">', unsafe_allow_html=True)
         c2.image(encard["画像URL"], width=250, caption=f"使用カード: {encard['カード名']}")
-
+        st.markdown('</div>', unsafe_allow_html=True)
         # ダメージや効果の簡易説明
         c2.caption(f"効果: {encard['type']} ({encard['最小ダメ']}～{encard['最大ダメ']})")
-        st.markdown('</div>', unsafe_allow_html=True)
+        
 
     st.divider()
 
