@@ -19,19 +19,39 @@ TYPE_COLORS = {
 # 光る演出用のCSSを注入
 st.markdown(f"""
     <style>
-    @keyframes glow-red {{ 0% {{ box-shadow: 0 0 5px #FF4B4B; }} 50% {{ box-shadow: 0 0 30px #FF4B4B; }} 100% {{ box-shadow: 0 0 5px #FF4B4B; }} }}
-    @keyframes glow-green {{ 0% {{ box-shadow: 0 0 5px #28A745; }} 50% {{ box-shadow: 0 0 30px #28A745; }} 100% {{ box-shadow: 0 0 5px #28A745; }} }}
-    @keyframes glow-blue {{ 0% {{ box-shadow: 0 0 5px #007BFF; }} 50% {{ box-shadow: 0 0 30px #007BFF; }} 100% {{ box-shadow: 0 0 5px #007BFF; }} }}
-    @keyframes glow-gold {{ 0% {{ box-shadow: 0 0 5px #FFD700; }} 50% {{ box-shadow: 0 0 30px #FFD700; }} 100% {{ box-shadow: 0 0 5px #FFD700; }} }}
-    @keyframes glow-gray {{ 0% {{ box-shadow: 0 0 5px #808080; }} 50% {{ box-shadow: 0 0 30px #808080; }} 100% {{ box-shadow: 0 0 5px #808080; }} }}
-    @keyframes glow-purple {{ 0% {{ box-shadow: 0 0 5px #A020F0; }} 50% {{ box-shadow: 0 0 30px #A020F0; }} 100% {{ box-shadow: 0 0 5px #A020F0; }} }}
+    /* 共通の光る枠線スタイル */
+    .glow-base {{
+        border-radius: 15px;
+        padding: 10px;
+        margin-bottom: 10px;
+        display: inline-block;
+    }}
 
-    .glow-攻撃 {{ border: 4px solid #FF4B4B !important; animation: glow-red 0.5s infinite; border-radius: 10px; }}
-    .glow-回復 {{ border: 4px solid #28A745 !important; animation: glow-green 0.5s infinite; border-radius: 10px; }}
-    .glow-防御 {{ border: 4px solid #007BFF !important; animation: glow-blue 0.5s infinite; border-radius: 10px; }}
-    .glow-バフ {{ border: 4px solid #FFD700 !important; animation: glow-gold 0.5s infinite; border-radius: 10px; }}
-    .glow-デバフ {{ border: 4px solid #808080 !important; animation: glow-gray 0.5s infinite; border-radius: 10px; }}
-    .glow-状態異常 {{ border: 4px solid #A020F0 !important; animation: glow-purple 0.5s infinite; border-radius: 10px; }}
+    /* 各タイプごとの発光定義 (複数のshadowを重ねて強度を出しています) */
+    .glow-攻撃 {{ 
+        border: 5px solid {TYPE_COLORS["攻撃"]}; 
+        box-shadow: 0 0 20px {TYPE_COLORS["攻撃"]}, inset 0 0 10px {TYPE_COLORS["攻撃"]};
+    }}
+    .glow-回復 {{ 
+        border: 5px solid {TYPE_COLORS["回復"]}; 
+        box-shadow: 0 0 20px {TYPE_COLORS["回復"]}, inset 0 0 10px {TYPE_COLORS["回復"]};
+    }}
+    .glow-防御 {{ 
+        border: 5px solid {TYPE_COLORS["防御"]}; 
+        box-shadow: 0 0 20px {TYPE_COLORS["防御"]}, inset 0 0 10px {TYPE_COLORS["防御"]};
+    }}
+    .glow-バフ {{ 
+        border: 5px solid {TYPE_COLORS["バフ"]}; 
+        box-shadow: 0 0 20px {TYPE_COLORS["バフ"]}, inset 0 0 10px {TYPE_COLORS["バフ"]};
+    }}
+    .glow-デバフ {{ 
+        border: 5px solid {TYPE_COLORS["デバフ"]}; 
+        box-shadow: 0 0 20px {TYPE_COLORS["デバフ"]}, inset 0 0 10px {TYPE_COLORS["デバフ"]};
+    }}
+    .glow-状態異常 {{ 
+        border: 5px solid {TYPE_COLORS["状態異常"]}; 
+        box-shadow: 0 0 20px {TYPE_COLORS["状態異常"]}, inset 0 0 10px {TYPE_COLORS["状態異常"]};
+    }}
     </style>
     """, unsafe_allow_html=True)
 
@@ -243,10 +263,10 @@ elif st.session_state.page == "BATTLE":
     c1.write("---")
     if 'player_last_card' in st.session_state:
         plcard = st.session_state.player_last_card
-        plcolor = TYPE_COLORS.get(plcard["type"], "#FFFFFF")
+        plcard_type=plcard["type"]
         
         c1.write("📢 **あなたのターン！**")
-        c1.markdown(f'<div class="flow-{plcard["type"]}">', unsafe_allow_html=True)
+        c1.markdown(f'<div class="flow-{plcard_type}">', unsafe_allow_html=True)
         c1.image(plcard["画像URL"], width=250, caption=f"使用カード: {plcard['カード名']}")
         c1.markdown('</div>', unsafe_allow_html=True)
         # ダメージや効果の簡易説明
@@ -254,10 +274,10 @@ elif st.session_state.page == "BATTLE":
     c2.write("---")
     if 'enemy_last_card' in st.session_state:
         encard = st.session_state.enemy_last_card
-        encolor = TYPE_COLORS.get(encard["type"], "#FFFFFF")
-        
+        encard_type = encard["type"]
+
         c2.write("📢 **敵のターン！**")
-        c2.markdown(f'<div class="flow-{encard["type"]}">', unsafe_allow_html=True)
+        c2.markdown(f'<div class="flow-{encard_type}">', unsafe_allow_html=True)
         c2.image(encard["画像URL"], width=250, caption=f"使用カード: {encard['カード名']}")
         c2.markdown('</div>', unsafe_allow_html=True)
         # ダメージや効果の簡易説明
