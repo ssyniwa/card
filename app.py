@@ -30,27 +30,27 @@ st.markdown(f"""
     /* 各タイプごとの発光定義 (複数のshadowを重ねて強度を出しています) */
     .glow-攻撃 {{ 
         border: 5px solid {TYPE_COLORS["攻撃"]}; 
-        box-shadow: 0 0 20px {TYPE_COLORS["攻撃"]}, inset 0 0 20px {TYPE_COLORS["攻撃"]};
+        box-shadow: 0 0 40px {TYPE_COLORS["攻撃"]}, inset 0 0 10px {TYPE_COLORS["攻撃"]};
     }}
     .glow-回復 {{ 
         border: 5px solid {TYPE_COLORS["回復"]}; 
-        box-shadow: 0 0 20px {TYPE_COLORS["回復"]}, inset 0 0 20px {TYPE_COLORS["回復"]};
+        box-shadow: 0 0 40px {TYPE_COLORS["回復"]}, inset 0 0 10px {TYPE_COLORS["回復"]};
     }}
     .glow-防御 {{ 
         border: 5px solid {TYPE_COLORS["防御"]}; 
-        box-shadow: 0 0 20px {TYPE_COLORS["防御"]}, inset 0 0 20px {TYPE_COLORS["防御"]};
+        box-shadow: 0 0 40px {TYPE_COLORS["防御"]}, inset 0 0 10px {TYPE_COLORS["防御"]};
     }}
     .glow-バフ {{ 
         border: 5px solid {TYPE_COLORS["バフ"]}; 
-        box-shadow: 0 0 20px {TYPE_COLORS["バフ"]}, inset 0 0 20px {TYPE_COLORS["バフ"]};
+        box-shadow: 0 0 40px {TYPE_COLORS["バフ"]}, inset 0 0 10px {TYPE_COLORS["バフ"]};
     }}
     .glow-デバフ {{ 
         border: 5px solid {TYPE_COLORS["デバフ"]}; 
-        box-shadow: 0 0 20px {TYPE_COLORS["デバフ"]}, inset 0 0 20px {TYPE_COLORS["デバフ"]};
+        box-shadow: 0 0 40px {TYPE_COLORS["デバフ"]}, inset 0 0 10px {TYPE_COLORS["デバフ"]};
     }}
     .glow-状態異常 {{ 
         border: 5px solid {TYPE_COLORS["状態異常"]}; 
-        box-shadow: 0 0 20px {TYPE_COLORS["状態異常"]}, inset 0 0 20px {TYPE_COLORS["状態異常"]};
+        box-shadow: 0 0 40px {TYPE_COLORS["状態異常"]}, inset 0 0 10px {TYPE_COLORS["状態異常"]};
     }}
     </style>
     """, unsafe_allow_html=True)
