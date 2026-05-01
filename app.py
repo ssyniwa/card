@@ -178,9 +178,9 @@ elif st.session_state.page == "BATTLE":
         plcard_type=plcard["type"]
         
         c1.write("📢 **あなたのターン！**")
-        c1.markdown(f'<div class="flow-{plcard_type}">', unsafe_allow_html=True)
+        
         c1.image(plcard["画像URL"], width=250, caption=f"使用カード: {plcard['カード名']}")
-        c1.markdown('</div>', unsafe_allow_html=True)
+        
         # ダメージや効果の簡易説明
         c1.caption(f"効果: {plcard['type']} ({plcard['最小ダメ']}～{plcard['最大ダメ']})")
    
@@ -194,9 +194,9 @@ elif st.session_state.page == "BATTLE":
         encard_type = encard["type"]
 
         c2.write("📢 **敵のターン！**")
-        c2.markdown(f'<div class="flow-{encard_type}">', unsafe_allow_html=True)
+        
         c2.image(encard["画像URL"], width=250, caption=f"使用カード: {encard['カード名']}")
-        c2.markdown('</div>', unsafe_allow_html=True)
+        
         # ダメージや効果の簡易説明
         c2.caption(f"効果: {encard['type']} ({encard['最小ダメ']}～{encard['最大ダメ']})")
     st.divider()
