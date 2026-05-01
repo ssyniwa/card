@@ -5,6 +5,36 @@ import os
 import pandas as pd
 from streamlit_gsheets import GSheetsConnection
 
+
+# カードの種類に応じた色の定義
+TYPE_COLORS = {
+    "攻撃": "#FF4B4B",     # 赤
+    "回復": "#28A745",     # 緑
+    "防御": "#007BFF",     # 青
+    "バフ": "#FFD700",     # 金
+    "デバフ": "#808080",   # 灰色
+    "状態異常": "#A020F0"  # 紫
+}
+
+# 光る演出用のCSSを注入
+st.markdown(f"""
+    <style>
+    @keyframes glow-red {{ 0% {{ box-shadow: 0 0 5px #FF4B4B; }} 50% {{ box-shadow: 0 0 25px #FF4B4B; }} 100% {{ box-shadow: 0 0 5px #FF4B4B; }} }}
+    @keyframes glow-green {{ 0% {{ box-shadow: 0 0 5px #28A745; }} 50% {{ box-shadow: 0 0 25px #28A745; }} 100% {{ box-shadow: 0 0 5px #28A745; }} }}
+    @keyframes glow-blue {{ 0% {{ box-shadow: 0 0 5px #007BFF; }} 50% {{ box-shadow: 0 0 25px #007BFF; }} 100% {{ box-shadow: 0 0 5px #007BFF; }} }}
+    @keyframes glow-gold {{ 0% {{ box-shadow: 0 0 5px #FFD700; }} 50% {{ box-shadow: 0 0 25px #FFD700; }} 100% {{ box-shadow: 0 0 5px #FFD700; }} }}
+    @keyframes glow-gray {{ 0% {{ box-shadow: 0 0 5px #808080; }} 50% {{ box-shadow: 0 0 25px #808080; }} 100% {{ box-shadow: 0 0 5px #808080; }} }}
+    @keyframes glow-purple {{ 0% {{ box-shadow: 0 0 5px #A020F0; }} 50% {{ box-shadow: 0 0 25px #A020F0; }} 100% {{ box-shadow: 0 0 5px #A020F0; }} }}
+
+    .glow-攻撃 {{ border: 4px solid #FF4B4B !important; animation: glow-red 1.5s infinite; border-radius: 10px; }}
+    .glow-回復 {{ border: 4px solid #28A745 !important; animation: glow-green 1.5s infinite; border-radius: 10px; }}
+    .glow-防御 {{ border: 4px solid #007BFF !important; animation: glow-blue 1.5s infinite; border-radius: 10px; }}
+    .glow-バフ {{ border: 4px solid #FFD700 !important; animation: glow-gold 1.5s infinite; border-radius: 10px; }}
+    .glow-デバフ {{ border: 4px solid #808080 !important; animation: glow-gray 1.5s infinite; border-radius: 10px; }}
+    .glow-状態異常 {{ border: 4px solid #A020F0 !important; animation: glow-purple 1.5s infinite; border-radius: 10px; }}
+    </style>
+    """, unsafe_allow_html=True)
+
 # スプレッドシートへの接続設定
 conn = st.connection("gsheets", type=GSheetsConnection)
 
@@ -122,17 +152,32 @@ elif st.session_state.page == "BATTLE":
     c1.image(st.session_state.player_img, width=300)
     c1.metric("PLAYER HP", st.session_state.player_hp)
     c1.progress(max(0,min(st.session_state.player_hp/300,1.0)))
+    c1.write("---")
+    if 'player_last_card' in st.session_state:
+        plcard = st.session_state.player_last_card
+        plcolor = TYPE_COLORS.get(plcard["type"], "#FFFFFF")
+        st.markdown(f'<div class="flow-{plcard["type"]}">', unsafe_allow_html=True)
+        c1.write("📢 **あなたのターン！**")
+        c1.image(plcard["画像URL"], width=250, caption=f"使用カード: {plcard['カード名']}")
+
+        # ダメージや効果の簡易説明
+        c1.caption(f"効果: {plcard['type']} ({plcard['最小ダメ']}～{plcard['最大ダメ']})")
+        st.markdown('</div>', unsafe_allow_html=True)
     c2.image(st.session_state.en_img, width=300)
     c2.metric("ENEMY HP", st.session_state.cpu_hp)
     c2.progress(max(0,min(st.session_state.cpu_hp/300,1.0)))
     c2.write("---")
     if 'enemy_last_card' in st.session_state:
         encard = st.session_state.enemy_last_card
+        encolor = TYPE_COLORS.get(encard["type"], "#FFFFFF")
+        st.markdown(f'<div class="flow-{encard["type"]}">', unsafe_allow_html=True)
         c2.write("📢 **敵のターン！**")
         c2.image(encard["画像URL"], width=250, caption=f"使用カード: {encard['カード名']}")
 
         # ダメージや効果の簡易説明
         c2.caption(f"効果: {encard['type']} ({encard['最小ダメ']}～{encard['最大ダメ']})")
+        st.markdown('</div>', unsafe_allow_html=True)
+
     st.divider()
 
     # 手札（ランダムに選ばれた3枚）を表示
@@ -145,7 +190,7 @@ elif st.session_state.page == "BATTLE":
             if st.button(f"使う", key=f"play_{i}", use_container_width=True):
                 card_type = card.get("type", "攻撃")
                 log = []
-                
+                st.session_state.player_last_card = card
                 defense=0
                 # 1. プレイヤーの行動フェーズ
                 if card_type == "攻撃":
