@@ -172,12 +172,34 @@ elif st.session_state.page == "BATTLE":
     c1.image(st.session_state.player_img, width=300)
     c1.metric("PLAYER HP", st.session_state.player_hp)
     c1.progress(max(0,min(st.session_state.player_hp/300,1.0)))
-    
+    c1.write("---")
+    if 'player_last_card' in st.session_state:
+        plcard = st.session_state.player_last_card
+        plcard_type=plcard["type"]
+        
+        c1.write("📢 **あなたのターン！**")
+        c1.markdown(f'<div class="flow-{plcard_type}">', unsafe_allow_html=True)
+        c1.image(plcard["画像URL"], width=250, caption=f"使用カード: {plcard['カード名']}")
+        c1.markdown('</div>', unsafe_allow_html=True)
+        # ダメージや効果の簡易説明
+        c1.caption(f"効果: {plcard['type']} ({plcard['最小ダメ']}～{plcard['最大ダメ']})")
         
     c2.image(st.session_state.en_img, width=300)
     c2.metric("ENEMY HP", st.session_state.cpu_hp)
     c2.progress(max(0,min(st.session_state.cpu_hp/300,1.0)))
     
+    c2.write("---")
+    if 'enemy_last_card' in st.session_state:
+        encard = st.session_state.enemy_last_card
+        encard_type = encard["type"]
+
+        c2.write("📢 **敵のターン！**")
+        c2.markdown(f'<div class="flow-{encard_type}">', unsafe_allow_html=True)
+        c2.image(encard["画像URL"], width=250, caption=f"使用カード: {encard['カード名']}")
+        c2.markdown('</div>', unsafe_allow_html=True)
+        # ダメージや効果の簡易説明
+        c2.caption(f"効果: {encard['type']} ({encard['最小ダメ']}～{encard['最大ダメ']})")
+    st.divider()
         
 
     
@@ -260,30 +282,8 @@ elif st.session_state.page == "BATTLE":
                 
                 if st.session_state.cpu_hp <= 0 or st.session_state.player_hp <= 0:
                     st.session_state.page = "RESULT"
-    c1.write("---")
-    if 'player_last_card' in st.session_state:
-        plcard = st.session_state.player_last_card
-        plcard_type=plcard["type"]
-        
-        c1.write("📢 **あなたのターン！**")
-        c1.markdown(f'<div class="flow-{plcard_type}">', unsafe_allow_html=True)
-        c1.image(plcard["画像URL"], width=250, caption=f"使用カード: {plcard['カード名']}")
-        c1.markdown('</div>', unsafe_allow_html=True)
-        # ダメージや効果の簡易説明
-        c1.caption(f"効果: {plcard['type']} ({plcard['最小ダメ']}～{plcard['最大ダメ']})")
-    c2.write("---")
-    if 'enemy_last_card' in st.session_state:
-        encard = st.session_state.enemy_last_card
-        encard_type = encard["type"]
-
-        c2.write("📢 **敵のターン！**")
-        c2.markdown(f'<div class="flow-{encard_type}">', unsafe_allow_html=True)
-        c2.image(encard["画像URL"], width=250, caption=f"使用カード: {encard['カード名']}")
-        c2.markdown('</div>', unsafe_allow_html=True)
-        # ダメージや効果の簡易説明
-        c2.caption(f"効果: {encard['type']} ({encard['最小ダメ']}～{encard['最大ダメ']})")
-    st.divider()
-    st.rerun()
+    
+                    st.rerun()
 
 # 5. 結果画面
 elif st.session_state.page == "RESULT":
